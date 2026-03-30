@@ -90,21 +90,21 @@ player = 1
 # Running Loop
 running = True
 
-last_mouse_clicked = False
-
 while running:
+    move = False
+
     for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            move = True
+
         if event.type == pygame.QUIT:
             running = False
 
-        mouse_clicked = event.type == pygame.MOUSEBUTTONDOWN
 
     draw_hexagons(centres)
     
     # Render Window
     pygame.display.flip()
-    
-    move = mouse_clicked and not last_mouse_clicked
 
     if move:
         mouse_coords = toGameCoords(pygame.mouse.get_pos())
@@ -130,8 +130,6 @@ while running:
         centres[closest_corner] = [r, int((player < 2))]
 
         player = (player + 1) % 4
-
-    last_mouse_clicked = mouse_clicked
 
 
     
