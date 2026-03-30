@@ -39,14 +39,14 @@ def draw_hexagons():
 # Window Setup Values
 (width, height) = (1200,600)
 background_colour = (255,255,255)
-#icon = pygame.image.load('happy_hex.png')
+icon = pygame.image.load('happy_hex.png')
 caption = "Hex Tac Toe Bot"
 
 # Window Setup
 screen = pygame.display.set_mode((width, height))
 screen.fill(background_colour)
 pygame.display.set_caption(caption)
-#pygame.display.set_icon(icon)
+pygame.display.set_icon(icon)
 
 # Coordinate Setup
 grid_scalar = 60
