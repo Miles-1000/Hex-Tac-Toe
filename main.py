@@ -10,7 +10,7 @@ def toScreenCoords(log_coords):
 
 def toGameCoords(screen_coords):
     if type(screen_coords) == list:
-        return [toScreenCoords(i) for i in screen_coords]
+        return [toGameCoords(i) for i in screen_coords]
     elif type(screen_coords) == tuple:
         return (screen_coords[0] - width*0.5, height*0.5 - screen_coords[1])
 
@@ -25,16 +25,32 @@ def centreToHexCoords(centre):
 
 def fill_hexagon(centre, colour):
 
-    #pygame.draw.polygon(screen, )
+    #if (x+y)%2==0:
+      #  pass      
+       #pygame.draw.polygon(screen, )
     pass
     
-def draw_hexagons():     
+def draw_hexagons(centres):     
 
-    for centre in centres:
-      #pygame.draw.circle(screen, (0,0,0), c:= toScreenCoords(centre), 5, 5) draw centres
+    for x in range(-10,11):
+        for y in range(-10,11):
+            if (x+y)%2 == 0:
 
-      edges = centreToHexCoords(centre)
-      pygame.draw.polygon(screen, (0,0,0), toScreenCoords(edges), 3)        #Draw hexagon
+                centre = (grid_scalar* x, grid_scalar*y*np.sqrt(3))
+                owner = centres[(x,y)][1]
+                if owner == 1:
+                    colour = (50,50, 180)
+                    width = 0
+                elif owner==-1:
+                    colour = (180,50,50)
+                    width = 0
+                else:
+                    colour = (0,0,0)
+                    width = 3
+                #pygame.draw.circle(screen, (0,0,0), c:= toScreenCoords(centre), 5, 5) draw centres
+
+                edges = centreToHexCoords(centre)
+                pygame.draw.polygon(screen, colour, toScreenCoords(edges), width)        #Draw hexagon
 
 # Window Setup Values
 (width, height) = (1200,600)
@@ -63,48 +79,62 @@ for angle in range(30, 360, 60):
 hexagons = {}
 
 # Draw Hex Grid
-centres_dictionary = {(x, y): 0  for x in range(-10,11) for y in range(-10,11) if (x+y)%2==0}
 
-centres = [(grid_scalar * x, grid_scalar * y * np.sqrt(3)) for x in range(-10,11) for y in range(-10,11) if (x+y)%2==0]
+#Key : centre, Value : [R-value, ownership]
+centres= {(x, y): [0, 0]  for x in range(-10,11) for y in range(-10,11) if (x+y)%2==0}
 
-for centre in centres:
-    # pygame.draw.circle(screen, (0,0,0), c:= toScreenCoords(centre), 5, 5)
+#centres = [(grid_scalar * x, grid_scalar * y * np.sqrt(3)) for x in range(-10,11) for y in range(-10,11) if (x+y)%2==0]
 
-    edges = centreToHexCoords(centre)
-    pygame.draw.polygon(screen, (0,0,0), toScreenCoords(edges), 3)
-
-# Render Window
-pygame.display.flip()
+player = 1
 
 # Running Loop
 running = True
+
+last_mouse_clicked = False
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        
-    mouse_coords = toGameCoords(pygame.mouse.get_pos())
-    scaled_mouse_coords = (mouse_coords[0] / grid_scalar, mouse_coords[1] / (grid_scalar * np.sqrt(3)))
 
-    corners = [(maths.ceil(scaled_mouse_coords[0]), maths.ceil(scaled_mouse_coords[1])),
-    (maths.ceil(scaled_mouse_coords[0]), maths.floor(scaled_mouse_coords[1])),
-    (maths.floor(scaled_mouse_coords[0]), maths.ceil(scaled_mouse_coords[1])),
-    (maths.floor(scaled_mouse_coords[0]), maths.floor(scaled_mouse_coords[1]))]
+        mouse_clicked = event.type == pygame.MOUSEBUTTONDOWN
+
+    draw_hexagons(centres)
+    
+    # Render Window
+    pygame.display.flip()
+    
+    move = mouse_clicked and not last_mouse_clicked
+
+    if move:
+        mouse_coords = toGameCoords(pygame.mouse.get_pos())
+        scaled_mouse_coords = (mouse_coords[0] / grid_scalar, mouse_coords[1] / (grid_scalar*maths.sqrt(3)))
+
+        corners = [(maths.ceil(scaled_mouse_coords[0]), maths.ceil(scaled_mouse_coords[1])),
+        (maths.ceil(scaled_mouse_coords[0]), maths.floor(scaled_mouse_coords[1])),
+        (maths.floor(scaled_mouse_coords[0]), maths.ceil(scaled_mouse_coords[1])),
+        (maths.floor(scaled_mouse_coords[0]), maths.floor(scaled_mouse_coords[1]))]
+
+        min_dist = float('inf')
+        closest_corner = None
+        for corner in corners:
+            if (corner[0] + corner[1]) % 2 == 0:
+                corner_game = (grid_scalar * corner[0], grid_scalar * corner[1] * np.sqrt(3))
+                dist = np.sqrt((mouse_coords[0] - corner_game[0])**2 + (mouse_coords[1] - corner_game[1])**2)
+
+                if dist < min_dist:
+                    closest_corner = corner
+                    min_dist = dist
+
+        r = centres[closest_corner][0]
+        centres[closest_corner] = [r, player]
+
+        player = -player
+
+    last_mouse_clicked = mouse_clicked
 
 
-    min_dist = float('inf')
-    closest_corner = None
-    for corner in corners:
-        if (corner[0] + corner[1]) % 2 == 0:
-            corner_game = (grid_scalar * corner[0], grid_scalar * corner[1] * np.sqrt(3))
-            dist = np.sqrt((mouse_coords[0] - corner_game[0])**2 + (mouse_coords[1] - corner_game[1])**2)
-
-            if dist < min_dist:
-                closest_corner = corner
-                min_dist = dist
-
-    print(closest_corner)
+    
 
 
 
