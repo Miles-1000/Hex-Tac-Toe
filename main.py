@@ -93,11 +93,12 @@ while running:
     (maths.floor(scaled_mouse_coords[0]), maths.floor(scaled_mouse_coords[1]))]
 
 
-    min_dist = 100
-    closest_corner = 0
+    min_dist = float('inf')
+    closest_corner = None
     for corner in corners:
         if (corner[0] + corner[1]) % 2 == 0:
-            dist = np.sqrt((scaled_mouse_coords[0] - corner[0])**2 + (scaled_mouse_coords[1] - corner[1])**2)
+            corner_game = (grid_scalar * corner[0], grid_scalar * corner[1] * np.sqrt(3))
+            dist = np.sqrt((mouse_coords[0] - corner_game[0])**2 + (mouse_coords[1] - corner_game[1])**2)
 
             if dist < min_dist:
                 closest_corner = corner
