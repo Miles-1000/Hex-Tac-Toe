@@ -41,7 +41,7 @@ def draw_hexagons(centres):
                 if owner == 1:
                     colour = (50,50, 180)
                     width = 0
-                elif owner==-1:
+                elif owner == 0:
                     colour = (180,50,50)
                     width = 0
                 else:
@@ -81,7 +81,7 @@ hexagons = {}
 # Draw Hex Grid
 
 #Key : centre, Value : [R-value, ownership]
-centres= {(x, y): [0, 0]  for x in range(-10,11) for y in range(-10,11) if (x+y)%2==0}
+centres= {(x, y): [0, -1]  for x in range(-10,11) for y in range(-10,11) if (x+y)%2==0}
 
 #centres = [(grid_scalar * x, grid_scalar * y * np.sqrt(3)) for x in range(-10,11) for y in range(-10,11) if (x+y)%2==0]
 
@@ -127,9 +127,9 @@ while running:
                     min_dist = dist
 
         r = centres[closest_corner][0]
-        centres[closest_corner] = [r, player]
+        centres[closest_corner] = [r, int((player < 2))]
 
-        player = -player
+        player = (player + 1) % 4
 
     last_mouse_clicked = mouse_clicked
 
