@@ -10,7 +10,7 @@ def toScreenCoords(log_coords):
 
 def toGameCoords(screen_coords):
     if type(screen_coords) == list:
-        return [toScreenCoords(i) for i in screen_coords]
+        return [toGameCoords(i) for i in screen_coords]
     elif type(screen_coords) == tuple:
         return (screen_coords[0] - width*0.5, height*0.5 - screen_coords[1])
 
@@ -25,28 +25,34 @@ def centreToHexCoords(centre):
 
 def fill_hexagon(centre, colour):
 
-    #pygame.draw.polygon(screen, )
+    if (x+y)%2==0:
+                
+       #pygame.draw.polygon(screen, )
     pass
     
-def draw_hexagons():     
+def draw_hexagons(centres):     
 
-    for centre in centres:
-      #pygame.draw.circle(screen, (0,0,0), c:= toScreenCoords(centre), 5, 5) draw centres
+    for x in range(-10,11):
+        for y in range(-10,11):
+            if (x+y)%2 == 0:
 
-      edges = centreToHexCoords(centre)
-      pygame.draw.polygon(screen, (0,0,0), toScreenCoords(edges), 3)        #Draw hexagon
+                centre = centres[(x,y)]
+                #pygame.draw.circle(screen, (0,0,0), c:= toScreenCoords(centre), 5, 5) draw centres
+
+                edges = centreToHexCoords(centre)
+                pygame.draw.polygon(screen, (0,0,0), toScreenCoords(edges), 3)        #Draw hexagon
 
 # Window Setup Values
 (width, height) = (1200,600)
 background_colour = (255,255,255)
-#icon = pygame.image.load('happy_hex.png')
+icon = pygame.image.load('happy_hex.png')
 caption = "Hex Tac Toe Bot"
 
 # Window Setup
 screen = pygame.display.set_mode((width, height))
 screen.fill(background_colour)
 pygame.display.set_caption(caption)
-#pygame.display.set_icon(icon)
+pygame.display.set_icon(icon)
 
 # Coordinate Setup
 grid_scalar = 60
@@ -67,14 +73,6 @@ centres_dictionary = {(x, y): 0  for x in range(-10,11) for y in range(-10,11) i
 
 centres = [(grid_scalar * x, grid_scalar * y * np.sqrt(3)) for x in range(-10,11) for y in range(-10,11) if (x+y)%2==0]
 
-for centre in centres:
-    # pygame.draw.circle(screen, (0,0,0), c:= toScreenCoords(centre), 5, 5)
-
-    edges = centreToHexCoords(centre)
-    pygame.draw.polygon(screen, (0,0,0), toScreenCoords(edges), 3)
-
-# Render Window
-pygame.display.flip()
 
 # Running Loop
 running = True
@@ -83,21 +81,25 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+    draw_hexagons(centres)
+    
+    # Render Window
+    pygame.display.flip()
         
     mouse_coords = toGameCoords(pygame.mouse.get_pos())
-    scaled_mouse_coords = (mouse_coords[0] / grid_scalar, mouse_coords[1] / (grid_scalar * np.sqrt(3)))
+    scaled_mouse_coords = (mouse_coords[0] / grid_scalar, mouse_coords[1] / (grid_scalar*maths.sqrt(3)))
 
     corners = [(maths.ceil(scaled_mouse_coords[0]), maths.ceil(scaled_mouse_coords[1])),
     (maths.ceil(scaled_mouse_coords[0]), maths.floor(scaled_mouse_coords[1])),
     (maths.floor(scaled_mouse_coords[0]), maths.ceil(scaled_mouse_coords[1])),
     (maths.floor(scaled_mouse_coords[0]), maths.floor(scaled_mouse_coords[1]))]
 
-
     min_dist = 100
     closest_corner = 0
     for corner in corners:
         if (corner[0] + corner[1]) % 2 == 0:
-            dist = np.sqrt((scaled_mouse_coords[0] - corner[0])**2 + (scaled_mouse_coords[1] - corner[1])**2)
+            dist = maths.sqrt((scaled_mouse_coords[0] - corner[0])**2 + (scaled_mouse_coords[1] - corner[1])**2)
 
             if dist < min_dist:
                 closest_corner = corner
