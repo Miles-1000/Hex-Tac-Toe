@@ -24,18 +24,17 @@ def centreToHexCoords(centre):
     return edges
 
 def fill_hexagon(centre, colour):
-    
-    edges = centreToHexCoords(centre)
-    
-    pygame.draw.polygon(screen, )
-    
-# def draw_hexagons(): 
-#     for centre in centres:
-#     # pygame.draw.circle(screen, (0,0,0), c:= toScreenCoords(centre), 5, 5)
 
-#     edges = centreToHexCoords(centre)
-#     pygame.draw.polygon(screen, (0,0,0), toScreenCoords(edges), 3)
+    #pygame.draw.polygon(screen, )
+    pass
+    
+def draw_hexagons():     
 
+    for centre in centres:
+      #pygame.draw.circle(screen, (0,0,0), c:= toScreenCoords(centre), 5, 5) draw centres
+
+      edges = centreToHexCoords(centre)
+      pygame.draw.polygon(screen, (0,0,0), toScreenCoords(edges), 3)        #Draw hexagon
 
 # Window Setup Values
 (width, height) = (1200,600)
